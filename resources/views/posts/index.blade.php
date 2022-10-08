@@ -26,8 +26,8 @@
                                         aria-describedby="emailHelp">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label" hidden>Immagine</label>
-                                    <input type="url" name="image" hidden class="form-control">
+                                    <label class="form-label">Immagine</label>
+                                    <input type="url" name="image"  class="form-control">
                                 </div>
                                 <button type="submit" class="btn btn-primary">Crea</button>
                             </form>
@@ -39,16 +39,16 @@
         @include('includes.filter_menu')
         <div class="offset-3 col-6">
             <div class="my-1">
-                <a class="btn btn-sm btn-outline-primary" href="{{ route('posts.selectAll') }}"><i
+                <a class="btn btn-sm btn-outline-primary {{ Request::route('posts.selectAll') ? 'active' : '' }}"    href="{{ route('posts.selectAll') }}"><i
                         class="fa-solid fa-circle-check me-1"></i> Seleziona tutti</a>
-                <a class="btn btn-sm btn-outline-secondary" href="{{ route('posts.deselectAll') }}"><i
+                <a class="btn btn-sm btn-outline-secondary"    href="{{ route('posts.deselectAll') }}"><i
                         class="fa-regular fa-circle-check me-1"></i> Deseleziona tutti</a>
             </div>
             <table class="table rounded-4 shadow mt-4">
                 <tbody>
                     @forelse ($posts as $post)
                         <tr>
-                            <td class="d-flex align-items-center">
+                            <td class="d-flex justify-content-center align-items-center">
                                 <a href="{{ route('checkTodo', $post->id) }}">
                                     @if ($post->is_checked == 0)
                                         <i class="fa-regular fa-circle-check"></i>
@@ -58,7 +58,13 @@
                                 </a>
                             </td>
                             <td>
-                                <img width="70" height="70" class="rounded" src="{{ $post->image }}" alt="">
+                                @if ($post->image)
+                                    <img width="100" height="70" class="rounded" src="{{ $post->image }}"
+                                        alt="">
+                                @else
+                                    <img width="100" height="70" class="rounded"
+                                        src="https://wopart.eu/wp-content/uploads/2021/10/placeholder-7.png" alt="">
+                                @endif
                             </td>
                             <td>
                                 <p class="{{ $post->is_checked == 1 ? 'text-decoration-line-through' : '' }}">
@@ -114,12 +120,41 @@
 
                                     </div>
                                     {{-- DELETE --}}
-                                    <form action="{{ route('posts.destroy', $post->id) }}" method="POST">
-                                        @method('DELETE')
-                                        @csrf
-                                        <button type="submit" class="btn"><i
-                                                class="fa-solid fa-trash text-muted"></i></button>
-                                    </form>
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal2">
+                                        <i class="fa-solid fa-trash text-muted"></i>
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleModal2" tabindex="-1"
+                                        aria-labelledby="exampleModalLabel2" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel2">Sei sicuro di
+                                                        eliminare questo elemento?</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="{{ route('posts.destroy', $post->id) }}"
+                                                        method="POST">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <div>
+                                                            <button type="submit" class="btn btn-danger">Elimina
+                                                                definitivamente</button>
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Annulla</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
                                 </div>
                             </td>
                         @empty

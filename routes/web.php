@@ -18,7 +18,7 @@ Route::get('/', function () {
     return view('home');
 });
 
-Route::resource('posts', PostController::class);
+Route::resource('/posts', PostController::class);
 Route::get('checkTodo/{id}', [PostController::class,'checkTodo'])->name('checkTodo');
 Route::get('getCompleted', [PostController::class,'getCompleted'])->name('posts.getCompleted');
 Route::get('getIncompleted', [PostController::class,'getIncompleted'])->name('posts.getIncompleted');
