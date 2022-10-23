@@ -14,14 +14,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-});
 
-Route::resource('/posts', PostController::class);
+/* Route::get('/', function () {
+    return view('home');
+}); */
+
+Route::get('/', [PostController::class,'index'])->name('home');
+Route::resource('posts', PostController::class);
 Route::get('checkTodo/{id}', [PostController::class,'checkTodo'])->name('checkTodo');
-Route::get('getCompleted', [PostController::class,'getCompleted'])->name('posts.getCompleted');
-Route::get('getIncompleted', [PostController::class,'getIncompleted'])->name('posts.getIncompleted');
-Route::get('selectAll', [PostController::class,'selectAll'])->name('posts.selectAll');
-Route::get('deselectAll', [PostController::class,'deselectAll'])->name('posts.deselectAll');
+Route::get('getCompleted', [PostController::class,'getCompleted'])->name('getCompleted');
+Route::get('getIncompleted', [PostController::class,'getIncompleted'])->name('getIncompleted');
+Route::get('selectAll', [PostController::class,'selectAll'])->name('selectAll');
+Route::get('deselectAll', [PostController::class,'deselectAll'])->name('deselectAll');
  

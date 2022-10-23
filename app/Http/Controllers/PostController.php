@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -43,8 +44,20 @@ class PostController extends Controller
             'description' => 'required',
         ]);
 
+          
+        //STORAGGIO DELL'IMMAINGE
+        if ($request->file()) {
+             $image = 'img-' . time() . '.' . $request->file('image')->getClientOriginalExtension();
+             $path = Storage::putFileAs('images', $request->file('image'), $image);
+         } else {
+             $path = null; //src
+             $image = null; //alt
+         }
+
         $new_post = new Post();
         $new_post->fill($request->all());
+        $new_post->img_name = $image;
+        $new_post->img_path = $path;
         $new_post->save();
 
 
@@ -70,7 +83,6 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('posts.edit', compact('post'));
     }
 
     /**
@@ -87,7 +99,30 @@ class PostController extends Controller
             'description' => 'required',
         ]);
 
-        $post->update($request->all());
+         //UPDATE DELL'IMMAGINE
+         if ($request->hasfile('image')) {
+            if ($post->img_name) {
+                Storage::delete($post->img_path);
+            }
+
+            $image = 'img-' . time() . '.' . $request->file('image')->getClientOriginalExtension();
+            $path = Storage::putFileAs('images', $request->file('image'), $image);
+        } else {
+
+            if (is_null($post->img_name)) {
+                $image = null;
+                $path = null;
+            } else {
+                $image = $post->img_name; 
+                $path = $post->img_path;
+            }
+        }
+
+        $post->update([
+            'description' => $request->description,
+            'img_name' => $image,
+            'img_path' => $path,
+        ]);
 
         return redirect()->route('posts.index');
     }
@@ -100,6 +135,10 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        
+        if (Storage::disk('local')->exists('images/' . $post->img_name)) {
+            Storage::disk('local')->delete('images/' . $post->img_name);
+        }
         $post->delete();
 
         return redirect()->route('posts.index');

@@ -10,6 +10,6 @@ class Post extends Model
     use HasFactory;
 
     protected $fillable = [
-        'image', 'description','is_checked'
+     'description','is_checked','img_path','img_name'
     ];
 }
